@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Bot Dashboard</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Component-specific stylesheets -->
+    <link rel="stylesheet" href="Phone_numbers_data.css">
+    <link rel="stylesheet" href="agents_data.css">
+    <link rel="stylesheet" href="knowledge_base_data.css">
+    <link rel="stylesheet" href="batch_calls_data.css">
+    <link rel="stylesheet" href="calls_data.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="vbot-logo.png" alt="V-Bot Logo">
+                <h1>V-Bot Dashboard</h1>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="agents">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Agents</span>
+                </div>
+                <div class="menu-item" data-page="knowledge-base">
+                    <i class="fas fa-book"></i>
+                    <span>Knowledge Base</span>
+                </div>
+                <div class="menu-item" data-page="phone-numbers">
+                    <i class="fas fa-phone"></i>
+                    <span>Phone Numbers</span>
+                </div>
+                <div class="menu-item" data-page="batch-calls">
+                    <i class="fas fa-phone-volume"></i>
+                    <span>Batch Calls</span>
+                </div>
+                <div class="menu-item" data-page="calls">
+                    <i class="fas fa-history"></i>
+                    <span>Call History</span>
+                </div>
+                <div class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">Admin User</span>
+                    <a href="#" id="logout-button">Sign Out</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">Dashboard</div>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page-content active">
+                <h2>Dashboard Overview</h2>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>3</h3>
+                            <p>Agents</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>2</h3>
+                            <p>Phone Numbers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Knowledge Entries</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>156</h3>
+                            <p>Total Calls</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Call Volume (Last 7 Days)</h3>
+                        <div class="chart" id="call-volume-chart">
+                            <!-- Chart will be rendered here -->
+                            <div class="placeholder-chart">Chart loading...</div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Call Duration (Avg. Minutes)</h3>
+                        <div class="chart" id="call-duration-chart">
+                            <!-- Chart will be rendered here -->
+                            <div class="placeholder-chart">Chart loading...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Call Completed</h4>
+                                <p>Agent "Sales Bot" completed a call (3:45 duration)</p>
+                                <span class="activity-time">10 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>Knowledge Base Updated</h4>
+                                <p>3 new entries added to "Product Information"</p>
+                                <span class="activity-time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="activity-details">
+                                <h4>New Agent Created</h4>
+                                <p>"Support Bot" was added to the system</p>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Page -->
+            <div id="agents-page" class="page-content">
+                <div class="page-header">
+                    <h2>Agents</h2>
+                    <div class="action-buttons">
+                        <button id="add-agent-button" class="action-button">
+                            <i class="fas fa-plus"></i> Add Agent
+                        </button>
+                        <button id="refresh-agents-button" class="action-button">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="agents-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agents-table-body">
+                            <!-- Agents will be loaded here dynamically -->
+                            <tr>
+                                <td>Sales Bot</td>
+                                <td>Handles new customer inquiries and sales calls</td>
+                                <td>03/01/2025</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn edit-agent" data-id="1">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete-agent" data-id="1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Support Bot</td>
+                                <td>Handles customer support and technical issues</td>
+                                <td>03/01/2025</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn edit-agent" data-id="2">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete-agent" data-id="2">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Feedback Bot</td>
+                                <td>Gathers customer feedback and survey responses</td>
+                                <td>03/01/2025</td>
+                                <td><span class="status inactive">Inactive</span></td>
+                                <td>
+                                    <button class="action-btn edit-agent" data-id="3">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete-agent" data-id="3">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Agent Modal -->
+                <div id="agent-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Agent</h3>
+                            <button id="close-agent-modal" class="close-button">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="agent-name">Agent Name</label>
+                                <input type="text" id="agent-name" placeholder="Enter agent name">
+                            </div>
+                            <div class="form-group">
+                                <label for="agent-description">Description</label>
+                                <textarea id="agent-description" placeholder="Enter description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="agent-status">Status</label>
+                                <select id="agent-status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="save-agent" class="action-button primary">Save</button>
+                            <button id="close-agent-modal-btn" class="action-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Page -->
+            <div id="knowledge-base-page" class="page-content">
+                <div class="page-header">
+                    <h2>Knowledge Base</h2>
+                    <div class="action-buttons">
+                        <button id="add-knowledge-button" class="action-button">
+                            <i class="fas fa-plus"></i> Add Entry
+                        </button>
+                        <button id="refresh-knowledge-button" class="action-button">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="knowledge-categories">
+                    <div class="category-item active" data-category="all">All Entries</div>
+                    <div class="category-item" data-category="product">Product Information</div>
+                    <div class="category-item" data-category="support">Support</div>
+                    <div class="category-item" data-category="policy">Policies</div>
+                </div>
+                
+                <div class="knowledge-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="knowledge-table-body">
+                            <!-- Knowledge entries will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Knowledge Modal -->
+                <div id="knowledge-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Knowledge Entry</h3>
+                            <button id="close-knowledge-modal" class="close-button">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="knowledge-title">Title</label>
+                                <input type="text" id="knowledge-title" placeholder="Enter title">
+                            </div>
+                            <div class="form-group">
+                                <label for="knowledge-category">Category</label>
+                                <select id="knowledge-category">
+                                    <option value="product">Product Information</option>
+                                    <option value="support">Support</option>
+                                    <option value="policy">Policies</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="knowledge-content">Content</label>
+                                <textarea id="knowledge-content" placeholder="Enter content"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="save-knowledge" class="action-button primary">Save</button>
+                            <button id="close-knowledge-modal-btn" class="action-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone Numbers Page -->
+            <div id="phone-numbers-page" class="page-content">
+                <div class="page-header">
+                    <h2>Phone Numbers</h2>
+                    <div class="action-buttons">
+                        <button id="add-phone-button" class="action-button">
+                            <i class="fas fa-plus"></i> Add Phone Number
+                        </button>
+                        <button id="refresh-phones-button" class="action-button">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="phone-numbers-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Phone Number</th>
+                                <th>Description</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="phone-numbers-table-body">
+                            <!-- Phone numbers will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Phone Modal -->
+                <div id="phone-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Phone Number</h3>
+                            <button id="close-phone-modal" class="close-button">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="phone-number">Phone Number</label>
+                                <input type="text" id="phone-number" placeholder="Enter phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone-description">Description</label>
+                                <input type="text" id="phone-description" placeholder="Enter description">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="save-phone" class="action-button primary">Save</button>
+                            <button id="close-phone-modal-btn" class="action-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Calls Page -->
+            <div id="batch-calls-page" class="page-content">
+                <div class="page-header">
+                    <h2>Batch Calls</h2>
+                    <div class="action-buttons">
+                        <button id="create-batch-button" class="action-button">
+                            <i class="fas fa-plus"></i> Create Batch
+                        </button>
+                        <button id="refresh-batches-button" class="action-button">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="batch-calls-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Batch Name</th>
+                                <th>Agent</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batch-calls-table-body">
+                            <!-- Batch calls will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Batch Modal -->
+                <div id="batch-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Create Batch</h3>
+                            <button id="close-batch-modal" class="close-button">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="batch-name">Batch Name</label>
+                                <input type="text" id="batch-name" placeholder="Enter batch name">
+                            </div>
+                            <div class="form-group">
+                                <label for="batch-agent">Agent</label>
+                                <select id="batch-agent">
+                                    <option value="">Select Agent</option>
+                                    <option value="1">Sales Bot</option>
+                                    <option value="2">Support Bot</option>
+                                    <option value="3">Feedback Bot</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="batch-phone">Phone Number</label>
+                                <select id="batch-phone">
+                                    <option value="">Select Phone Number</option>
+                                    <option value="1">+1 (555) 123-4567</option>
+                                    <option value="2">+1 (555) 987-6543</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="batch-contacts">Upload Contacts CSV</label>
+                                <input type="file" id="batch-contacts" accept=".csv">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="save-batch" class="action-button primary">Create Batch</button>
+                            <button id="close-batch-modal-btn" class="action-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call History Page -->
+            <div id="calls-page" class="page-content">
+                <div class="page-header">
+                    <h2>Call History</h2>
+                    <div class="filter-container">
+                        <div class="date-filter">
+                            <label for="date-from">From:</label>
+                            <input type="date" id="date-from">
+                            <label for="date-to">To:</label>
+                            <input type="date" id="date-to">
+                        </div>
+                        <div class="agent-filter">
+                            <label for="agent-filter">Agent:</label>
+                            <select id="agent-filter">
+                                <option value="">All Agents</option>
+                                <option value="1">Sales Bot</option>
+                                <option value="2">Support Bot</option>
+                                <option value="3">Feedback Bot</option>
+                            </select>
+                        </div>
+                        <button id="apply-filters" class="action-button">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="calls-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Phone Number</th>
+                                <th>Agent</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calls-table-body">
+                            <!-- Call history will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="pagination-button" id="prev-page">Previous</button>
+                    <span class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">10</span></span>
+                    <button class="pagination-button" id="next-page">Next</button>
+                </div>
+                
+                <!-- Call Details Modal -->
+                <div id="call-details-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Call Details</h3>
+                            <button id="close-call-details-modal" class="close-button">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="call-info">
+                                <div class="info-item">
+                                    <span class="info-label">Date & Time:</span>
+                                    <span id="call-datetime" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Phone Number:</span>
+                                    <span id="call-phone" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Agent:</span>
+                                    <span id="call-agent" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Duration:</span>
+                                    <span id="call-duration" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Status:</span>
+                                    <span id="call-status" class="info-value"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="call-transcript">
+                                <h4>Transcript</h4>
+                                <div id="transcript-content" class="transcript-content"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="download-transcript" class="action-button">Download Transcript</button>
+                            <button id="close-call-details-modal-btn" class="action-button">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings-page" class="page-content">
+                <h2>Settings</h2>
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>General Settings</h3>
+                        <div class="form-group">
+                            <label for="company-name">Company Name</label>
+                            <input type="text" id="company-name" value="V-Bot Inc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-email">Admin Email</label>
+                            <input type="email" id="admin-email" value="admin@vbot.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="timezone">Timezone</label>
+                            <select id="timezone">
+                                <option value="UTC-8">Pacific Time (UTC-8)</option>
+                                <option value="UTC-7">Mountain Time (UTC-7)</option>
+                                <option value="UTC-6">Central Time (UTC-6)</option>
+                                <option value="UTC-5" selected>Eastern Time (UTC-5)</option>
+                                <option value="UTC">UTC</option>
+                                <option value="UTC+1">Central European Time (UTC+1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>API Settings</h3>
+                        <div class="form-group">
+                            <label for="api-key">API Key</label>
+                            <div class="api-key-container">
+                                <input type="password" id="api-key" value="sk_live_1234567890abcdef">
+                                <button id="show-api-key" class="action-button small">Show</button>
+                                <button id="regenerate-api-key" class="action-button small">Regenerate</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="webhook-url">Webhook URL</label>
+                            <input type="text" id="webhook-url" value="https://yourcompany.com/webhooks/vbot">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Notification Settings</h3>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="email-notifications" checked>
+                            <label for="email-notifications">Email Notifications</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="call-alerts" checked>
+                            <label for="call-alerts">Call Alerts</label>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="batch-alerts" checked>
+                            <label for="batch-alerts">Batch Process Alerts</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-actions">
+                    <button id="save-settings" class="action-button primary">Save Settings</button>
+                    <button id="reset-settings" class="action-button">Reset to Default</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+    <script src="phone_numbers_data.js"></script>
+    <script src="agents_data.js"></script>
+    <script src="knowledge_base_data.js"></script>
+    <script src="batch_calls_data.js"></script>
+    <script src="calls_data.js"></script>
+</body>
+</html>

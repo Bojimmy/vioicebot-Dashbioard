@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceBot Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6b7280;
+            --background-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover, 
+        .sidebar-menu a.active {
+            background-color: rgba(74, 108, 247, 0.05);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #3b5cf5;
+        }
+
+        .action-btn i {
+            margin-right: 8px;
+        }
+
+        /* Dashboard grid layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-change {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .positive {
+            color: var(--success-color);
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .negative {
+            color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Tabs for agent configuration */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Agent settings form */
+        .form-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .form-check input {
+            margin-right: 8px;
+        }
+
+        /* API integration section */
+        .api-card {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .api-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(74, 108, 247, 0.1);
+            border-radius: 8px;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .api-info {
+            flex: 1;
+        }
+
+        .api-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .api-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .api-status.connected {
+            color: var(--success-color);
+        }
+
+        .api-status.disconnected {
+            color: var(--danger-color);
+        }
+
+        .api-action {
+            margin-left: 16px;
+        }
+
+        /* Flow builder styles */
+        .flow-builder {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            height: 500px;
+            position: relative;
+        }
+
+        .flow-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: #f9fafb;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 6px;
+            overflow: auto;
+        }
+
+        .flow-tools {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 12px;
+        }
+
+        .flow-tool {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .flow-tool:hover {
+            background-color: #f9fafb;
+            border-color: var(--primary-color);
+        }
+
+        .flow-tool i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .flow-node {
+            position: absolute;
+            width: 180px;
+            padding: 12px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: move;
+        }
+
+        .flow-node-greeting {
+            top: 150px;
+            left: 200px;
+            border-left: 3px solid #10b981;
+        }
+
+        .flow-node-menu {
+            top: 250px;
+            left: 450px;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .flow-node-appointment {
+            top: 350px;
+            left: 700px;
+            border-left: 3px solid #4a6cf7;
+        }
+
+        .flow-node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .flow-node-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Phone number section */
+        .phone-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .phone-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background-color: rgba(74, 108, 247, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 16px;
+        }
+
+        .phone-details {
+            flex: 1;
+        }
+
+        .phone-number {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .phone-info {
+            display: flex;
+            margin-top: 8px;
+        }
+
+        .phone-info-item {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .phone-info-item i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .phone-actions {
+            display: flex;
+        }
+
+        .phone-action-btn {
+            padding: 8px 12px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .phone-action-btn:hover {
+            background-color: #f9fafb;
+        }
+
+        .phone-action-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .phone-action-btn.primary:hover {
+            background-color: #3b5cf5;
+        }
+
+        /* Knowledge base section */
+        .kb-list {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .kb-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .kb-item:last-child {
+            border-bottom: none;
+        }
+
+        .kb-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: rgba(74, 108, 247, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: var(--primary-color);
+        }
+
+        .kb-details {
+            flex: 1;
+        }
+
+        .kb-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .kb-meta {
+            display: flex;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .kb-meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+        }
+
+        .kb-meta-item i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .kb-actions {
+            display: flex;
+        }
+
+        .kb-action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            margin-left: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .kb-action-btn:hover {
+            background-color: #f9fafb;
+            color: var(--primary-color);
+        }
+
+        /* Loading indicator */
+        .loader {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(74, 108, 247, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Page content containers */
+        .page-container {
+            display: none;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 10px 0;
+            }
+            
+            .sidebar-logo {
+                padding: 0 15px 15px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+            }
+            
+            .flow-builder {
+                height: 400px;
+            }
+            
+            .phone-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .phone-icon {
+                margin-bottom: 10px;
+            }
+            
+            .phone-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="public/agents_data.css">
+    <script src="public/agents_data.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGE2Y2Y3IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDFhMyAzIDAgMCAwLTMgM3Y4YTMgMyAwIDAgMCA2IDBWNGEzIDMgMCAwIDAtMy0zeiIvPjxwYXRoIGQ9Ik0xOSAxMHYyYTcgNyAwIDAgMS0xNCAwdi0yIi8+PHBhdGggZD0iTTEyIDE5YTMgMyAwIDAgMS0zLTN2LTFoNnYxYTMgMyAwIDAgMS0zIDN6Ii8+PC9zdmc+" alt="VoiceBot Logo">
+                <h1>VoiceBot</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-page="dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-page="agents"><i class="fas fa-robot"></i> Agents</a></li>
+                <li><a href="#" data-page="knowledge-base"><i class="fas fa-database"></i> Knowledge Base</a></li>
+                <li><a href="#" data-page="phone-numbers"><i class="fas fa-phone"></i> Phone Numbers</a></li>
+                <li><a href="#" data-page="batch-calls"><i class="fas fa-phone-volume"></i> Batch Calls</a></li>
+                <li><a href="#" data-page="call-history"><i class="fas fa-history"></i> Call History</a></li>
+                <li><a href="#" data-page="billing"><i class="fas fa-credit-card"></i> Billing</a></li>
+                <li><a href="#" data-page="api-keys"><i class="fas fa-key"></i> API Keys</a></li>
+                <li><a href="#" data-page="webhooks"><i class="fas fa-link"></i> Webhooks</a></li>
+                <li><a href="#" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div class="page-container active" id="dashboard-page">
+                <div class="page-header">
+                    <h2>Agent Dashboard</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Create New Agent</button>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Total Calls</h3>
+                        <div class="stat-value">1,287 <span class="stat-change positive">+12%</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Avg. Call Duration</h3>
+                        <div class="stat-value">3m 42s <span class="stat-change positive">+5%</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Appointments Set</h3>
+                        <div class="stat-value">324 <span class="stat-change positive">+18%</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Task Completion Rate</h3>
+                        <div class="stat-value">92.4% <span class="stat-change positive">+3.2%</span></div>
+                    </div>
+                </div>
+
+                <!-- Agent Configuration Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="general">General Settings</div>
+                    <div class="tab" data-tab="voice">Voice & Language</div>
+                    <div class="tab" data-tab="integrations">API Integrations</div>
+                    <div class="tab" data-tab="flow">Conversation Flow</div>
+                    <div class="tab" data-tab="phone">Phone Numbers</div>
+                    <div class="tab" data-tab="knowledge">Knowledge Base</div>
+                    <div class="tab" data-tab="analytics">Analytics</div>
+                </div>
+
+                <!-- General Settings Tab -->
+                <div class="tab-content active" id="general">
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="agent-name">Agent Name</label>
+                            <input type="text" id="agent-name" class="form-control" value="Dana">
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-role">Agent Role</label>
+                            <input type="text" id="agent-role" class="form-control" value="Front Desk Receptionist">
+                        </div>
+                        <div class="form-group">
+                            <label for="business-name">Business Name</label>
+                            <input type="text" id="business-name" class="form-control" value="Smile Dental">
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-prompt">Global Prompt</label>
+                            <textarea id="agent-prompt" class="form-control">#IMPORTANT: Ensure All Dynamic Variables Are Executed Properly.
+
+##At the Beginning of Every Call
+• Run ((check_time))
+
+#Role:
+You are Dana the front desk receptionist for Smile Dental, responsible for scheduling patient appointments and assisting callers with their inquiries. Your goal is to provide a welcoming and efficient experience while ensuring accurate appointment scheduling.
+
+Task
+
+Greeting & Introduction:
+• Answer calls with:
+"Hello! Thank you for calling Smile Dental. My name is Dana. How can I assist you today?"</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Agent Capabilities</label>
+                            <div class="form-check">
+                                <input type="checkbox" id="capability-appointment" checked>
+                                <label for="capability-appointment">Appointment Scheduling</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="capability-email" checked>
+                                <label for="capability-email">Email Confirmations</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="capability-faq" checked>
+                                <label for="capability-faq">FAQ Handling</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="capability-transfer">
+                                <label for="capability-transfer">Call Transfer</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice & Language Tab -->
+                <div class="tab-content" id="voice">
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="voice-provider">Voice Provider</label>
+                            <select id="voice-provider" class="form-control">
+                                <option value="elevenlabs" selected>Eleven Labs</option>
+                                <option value="google">Google Cloud TTS</option>
+                                <option value="amazon">Amazon Polly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="voice-selection">Voice Selection</label>
+                            <select id="voice-selection" class="form-control">
+                                <option value="cimo" selected>Cimo</option>
+                                <option value="rachel">Rachel</option>
+                                <option value="thomas">Thomas</option>
+                                <option value="emily">Emily</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language" class="form-control">
+                                <option value="en-US" selected>English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="es-ES">Spanish</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="speech-rate">Speech Rate</label>
+                            <input type="range" id="speech-rate" class="form-control" min="0.5" max="2" step="0.1" value="1">
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                <span>Slower</span>
+                                <span>Normal</span>
+                                <span>Faster</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="voice-test">Test Voice</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="voice-test" class="form-control" value="Hello, this is Dana from Smile Dental. How can I help you today?">
+                                <button class="action-btn"><i class="fas fa-play"></i> Test</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Integrations Tab -->
+                <div class="tab-content" id="integrations">
+                    <div class="form-card">
+                        <h3 style="margin-bottom: 16px;">Connect API Services</h3>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">OpenAI ChatGPT</div>
+                                <div class="api-status connected">Connected</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn">Configure</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Eleven Labs</div>
+                                <div class="api-status connected">Connected</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn">Configure</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Twilio</div>
+                                <div class="api-status disconnected">Not Connected</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn primary">Connect</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Google Calendar</div>
+                                <div class="api-status disconnected">Not Connected</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn primary">Connect</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Email Service (SMTP)</div>
+                                <div class="api-status disconnected">Not Connected</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn primary">Connect</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conversation Flow Tab -->
+                <div class="tab-content" id="flow">
+                    <div class="flow-builder">
+                        <div class="flow-canvas">
+                            <div class="flow-node flow-node-greeting">
+                                <div class="flow-node-title">Greeting</div>
+                                <div class="flow-node-description">Initial greeting when call is answered</div>
+                            </div>
+                            <div class="flow-node flow-node-menu">
+                                <div class="flow-node-title">Menu Options</div>
+                                <div class="flow-node-description">Present caller with options</div>
+                            </div>
+                            <div class="flow-node flow-node-appointment">
+                                <div class="flow-node-title">Appointment Scheduling</div>
+                                <div class="flow-node-description">Process for booking appointments</div>
+                            </div>
+                        </div>
+                        <div class="flow-tools">
+                            <div class="flow-tool">
+                                <i class="fas fa-comment"></i> Conversation
+                            </div>
+                            <div class="flow-tool">
+                                <i class="fas fa-code"></i> Function
+                            </div>
+                            <div class="flow-tool">
+                                <i class="fas fa-phone-volume"></i> Call Transfer
+                            </div>
+                            <div class="flow-tool">
+                                <i class="fas fa-keypad"></i> Press Digit
+                            </div>
+                            <div class="flow-tool">
+                                <i class="fas fa-sign-out-alt"></i> Ending
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Numbers Tab -->
+                <div class="tab-content" id="phone">
+                    <div class="page-header" style="margin-top: 0;">
+                        <h3>Phone Numbers</h3>
+                        <button class="action-btn"><i class="fas fa-plus"></i> Add Number</button>
+                    </div>
+                    
+                    <div class="phone-card">
+                        <div class="phone-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="phone-details">
+                            <div class="phone-number">+1 (555) 123-4567</div>
+                            <div class="phone-info">
+                                <div class="phone-info-item">
+                                    <i class="fas fa-map-marker-alt"></i> US
+                                </div>
+                                <div class="phone-info-item">
+                                    <i class="fas fa-clock"></i> Active
+                                </div>
+                                <div class="phone-info-item">
+                                    <i class="fas fa-robot"></i> Dana (Smile Dental)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="phone-actions">
+                            <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="phone-action-btn"><i class="fas fa-cog"></i></button>
+                            <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                        </div>
+                    </div>
+                    
+                    <div class="phone-card">
+                        <div class="phone-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="phone-details">
+                            <div class="phone-number">+1 (555) 987-6543</div>
+                            <div class="phone-info">
+                                <div class="phone-info-item">
+                                    <i class="fas fa-map-marker-alt"></i> US
+                                </div>
+                                <div class="phone-info-item">
+                                    <i class="fas fa-clock"></i> Inactive
+                                </div>
+                                <div class="phone-info-item">
+                                    <i class="fas fa-robot"></i> Not Assigned
+                                </div>
+                            </div>
+                        </div>
+                        <div class="phone-actions">
+                            <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="phone-action-btn"><i class="fas fa-cog"></i></button>
+                            <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Tab -->
+                <div class="tab-content" id="knowledge">
+                    <div class="page-header" style="margin-top: 0;">
+                        <h3>Knowledge Base</h3>
+                        <button class="action-btn"><i class="fas fa-plus"></i> Add Knowledge Base</button>
+                    </div>
+                    
+                    <div class="kb-list">
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Smile Dental Services</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 12 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 2 days ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Dental Procedures FAQ</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 8 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 1 week ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Insurance Information</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 5 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 3 weeks ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="analytics">
+                    <div class="form-card">
+                        <h3>Analytics Dashboard</h3>
+                        <p>View detailed call analytics and agent performance metrics.</p>
+                        
+                        <div style="height: 300px; background-color: #f5f7fa; border-radius: 8px; margin-top: 20px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                            Analytics charts will appear here
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Page -->
+            <div class="page-container" id="agents-page">
+                <div class="page-header">
+                    <h2>Agent Management</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Create New Agent</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Your Voice Agents</h3>
+                    <p>Create and manage your voice agents for different business needs.</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="agent-list">
+                            <div class="api-card">
+                                <div class="api-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="api-info">
+                                    <div class="api-title">Dana - Smile Dental</div>
+                                    <div class="api-status connected">Active</div>
+                                </div>
+                                <div class="api-action">
+                                    <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                    <button class="phone-action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                                    <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                                </div>
+                            </div>
+                            
+                            <div class="api-card">
+                                <div class="api-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="api-info">
+                                    <div class="api-title">Mark - Tech Support</div>
+                                    <div class="api-status connected">Active</div>
+                                </div>
+                                <div class="api-action">
+                                    <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                    <button class="phone-action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                                    <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                                </div>
+                            </div>
+                            
+                            <div class="api-card">
+                                <div class="api-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="api-info">
+                                    <div class="api-title">Sarah - Customer Service</div>
+                                    <div class="api-status disconnected">Draft</div>
+                                </div>
+                                <div class="api-action">
+                                    <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                    <button class="phone-action-btn primary"><i class="fas fa-play"></i> Activate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Page -->
+            <div class="page-container" id="knowledge-base-page">
+                <div class="page-header">
+                    <h2>Knowledge Base Management</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Create New Knowledge Base</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Your Knowledge Bases</h3>
+                    <p>Manage information sources that power your voice agents' responses.</p>
+                    
+                    <div class="kb-list" style="margin-top: 20px;">
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Smile Dental Services</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 12 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 2 days ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Dental Procedures FAQ</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 8 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 1 week ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Insurance Information</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 5 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 3 weeks ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="kb-item">
+                            <div class="kb-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="kb-details">
+                                <div class="kb-title">Pricing and Services</div>
+                                <div class="kb-meta">
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-file"></i> 3 documents
+                                    </div>
+                                    <div class="kb-meta-item">
+                                        <i class="fas fa-clock"></i> Updated 1 month ago
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kb-actions">
+                                <button class="kb-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="kb-action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone Numbers Page -->
+            <div class="page-container" id="phone-numbers-page">
+                <div class="page-header">
+                    <h2>Phone Number Management</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Add New Number</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Your Phone Numbers</h3>
+                    <p>Manage the phone numbers connected to your voice agents.</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="phone-card">
+                            <div class="phone-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="phone-details">
+                                <div class="phone-number">+1 (555) 123-4567</div>
+                                <div class="phone-info">
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-map-marker-alt"></i> US
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-clock"></i> Active
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-robot"></i> Dana (Smile Dental)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-actions">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="phone-action-btn"><i class="fas fa-cog"></i></button>
+                                <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                            </div>
+                        </div>
+                        
+                        <div class="phone-card">
+                            <div class="phone-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="phone-details">
+                                <div class="phone-number">+1 (555) 987-6543</div>
+                                <div class="phone-info">
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-map-marker-alt"></i> US
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-clock"></i> Inactive
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-robot"></i> Not Assigned
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-actions">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="phone-action-btn"><i class="fas fa-cog"></i></button>
+                                <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                            </div>
+                        </div>
+                        
+                        <div class="phone-card">
+                            <div class="phone-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="phone-details">
+                                <div class="phone-number">+1 (555) 456-7890</div>
+                                <div class="phone-info">
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-map-marker-alt"></i> US
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-clock"></i> Active
+                                    </div>
+                                    <div class="phone-info-item">
+                                        <i class="fas fa-robot"></i> Mark (Tech Support)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-actions">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i></button>
+                                <button class="phone-action-btn"><i class="fas fa-cog"></i></button>
+                                <button class="phone-action-btn primary"><i class="fas fa-phone"></i> Test</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Pages - Basic Structure -->
+            <div class="page-container" id="batch-calls-page">
+                <div class="page-header">
+                    <h2>Batch Call Management</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Create Batch Campaign</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Batch Calling Campaigns</h3>
+                    <p>Create and manage batch calling campaigns for automated outreach.</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-phone-volume"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Appointment Reminders</div>
+                                <div class="api-status connected">Active</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                <button class="phone-action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                                <button class="phone-action-btn primary"><i class="fas fa-play"></i> Run</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-phone-volume"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Service Survey</div>
+                                <div class="api-status disconnected">Scheduled</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                <button class="phone-action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                                <button class="phone-action-btn primary"><i class="fas fa-play"></i> Run</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-container" id="call-history-page">
+                <div class="page-header">
+                    <h2>Call History</h2>
+                    <div>
+                        <button class="phone-action-btn"><i class="fas fa-download"></i> Export</button>
+                        <button class="phone-action-btn"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Recent Calls</h3>
+                    
+                    <div style="margin-top: 20px; overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                                    <th style="padding: 10px; font-weight: 500;">Date & Time</th>
+                                    <th style="padding: 10px; font-weight: 500;">Phone Number</th>
+                                    <th style="padding: 10px; font-weight: 500;">Agent</th>
+                                    <th style="padding: 10px; font-weight: 500;">Duration</th>
+                                    <th style="padding: 10px; font-weight: 500;">Status</th>
+                                    <th style="padding: 10px; font-weight: 500;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Feb 28, 2025 10:23 AM</td>
+                                    <td style="padding: 10px;">+1 (555) 543-2345</td>
+                                    <td style="padding: 10px;">Dana</td>
+                                    <td style="padding: 10px;">4m 12s</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Completed</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="kb-action-btn"><i class="fas fa-file-alt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Feb 28, 2025 9:45 AM</td>
+                                    <td style="padding: 10px;">+1 (555) 876-5432</td>
+                                    <td style="padding: 10px;">Dana</td>
+                                    <td style="padding: 10px;">2m 35s</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Completed</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="kb-action-btn"><i class="fas fa-file-alt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Feb 28, 2025 9:12 AM</td>
+                                    <td style="padding: 10px;">+1 (555) 234-5678</td>
+                                    <td style="padding: 10px;">Mark</td>
+                                    <td style="padding: 10px;">5m 48s</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Completed</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="kb-action-btn"><i class="fas fa-file-alt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Feb 27, 2025 4:56 PM</td>
+                                    <td style="padding: 10px;">+1 (555) 987-6543</td>
+                                    <td style="padding: 10px;">Dana</td>
+                                    <td style="padding: 10px;">1m 15s</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Transferred</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="kb-action-btn"><i class="fas fa-file-alt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px;">Feb 27, 2025 2:34 PM</td>
+                                    <td style="padding: 10px;">+1 (555) 345-6789</td>
+                                    <td style="padding: 10px;">Mark</td>
+                                    <td style="padding: 10px;">3m 22s</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Completed</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="kb-action-btn"><i class="fas fa-file-alt"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-container" id="billing-page">
+                <div class="page-header">
+                    <h2>Billing & Usage</h2>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Current Month Usage</h3>
+                        <div class="stat-value">$142.87</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Call Minutes</h3>
+                        <div class="stat-value">1,287 mins</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>API Requests</h3>
+                        <div class="stat-value">5,432</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Plan</h3>
+                        <div class="stat-value">Business</div>
+                    </div>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Recent Invoices</h3>
+                    
+                    <div style="margin-top: 20px; overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                                    <th style="padding: 10px; font-weight: 500;">Date</th>
+                                    <th style="padding: 10px; font-weight: 500;">Invoice #</th>
+                                    <th style="padding: 10px; font-weight: 500;">Amount</th>
+                                    <th style="padding: 10px; font-weight: 500;">Status</th>
+                                    <th style="padding: 10px; font-weight: 500;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Feb 01, 2025</td>
+                                    <td style="padding: 10px;">INV-2025-0287</td>
+                                    <td style="padding: 10px;">$138.54</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 10px;">Jan 01, 2025</td>
+                                    <td style="padding: 10px;">INV-2025-0154</td>
+                                    <td style="padding: 10px;">$125.68</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px;">Dec 01, 2024</td>
+                                    <td style="padding: 10px;">INV-2024-1298</td>
+                                    <td style="padding: 10px;">$119.92</td>
+                                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                                    <td style="padding: 10px;">
+                                        <button class="kb-action-btn"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-container" id="api-keys-page">
+                <div class="page-header">
+                    <h2>API Keys</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Create API Key</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Your API Keys</h3>
+                    <p>Manage API keys for programmatic access to your voice bot services.</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Production Key</div>
+                                <div class="api-status">••••••••••••••••7Gk9</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-eye"></i> View</button>
+                                <button class="phone-action-btn"><i class="fas fa-copy"></i> Copy</button>
+                                <button class="phone-action-btn"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Development Key</div>
+                                <div class="api-status">••••••••••••••••3Hj2</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-eye"></i> View</button>
+                                <button class="phone-action-btn"><i class="fas fa-copy"></i> Copy</button>
+                                <button class="phone-action-btn"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-container" id="webhooks-page">
+                <div class="page-header">
+                    <h2>Webhooks</h2>
+                    <button class="action-btn"><i class="fas fa-plus"></i> Add Webhook</button>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Your Webhooks</h3>
+                    <p>Configure webhooks to receive notifications about calls and events.</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Call Completion Webhook</div>
+                                <div class="api-status">https://api.example.com/webhook/calls</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                <button class="phone-action-btn"><i class="fas fa-trash"></i> Delete</button>
+                                <button class="phone-action-btn primary"><i class="fas fa-play"></i> Test</button>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="api-info">
+                                <div class="api-title">Appointment Webhook</div>
+                                <div class="api-status">https://api.example.com/webhook/appointments</div>
+                            </div>
+                            <div class="api-action">
+                                <button class="phone-action-btn"><i class="fas fa-pencil-alt"></i> Edit</button>
+                                <button class="phone-action-btn"><i class="fas fa-trash"></i> Delete</button>
+                                <button class="phone-action-btn primary"><i class="fas fa-play"></i> Test</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-container" id="settings-page">
+                <div class="page-header">
+                    <h2>Account Settings</h2>
+                </div>
+                
+                <div class="form-card">
+                    <h3>General Settings</h3>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label for="account-name">Account Name</label>
+                            <input type="text" id="account-name" class="form-control" value="Smile Dental">
+                        </div>
+                        <div class="form-group">
+                            <label for="account-email">Email Address</label>
+                            <input type="email" id="account-email" class="form-control" value="admin@smiledental.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="account-timezone">Timezone</label>
+                            <select id="account-timezone" class="form-control">
+                                <option value="America/New_York" selected>Eastern Time (US & Canada)</option>
+                                <option value="America/Chicago">Central Time (US & Canada)</option>
+                                <option value="America/Denver">Mountain Time (US & Canada)</option>
+                                <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
+                            </select>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="action-btn">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-card">
+                    <h3>Security</h3>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" class="form-control">
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="action-btn">Update Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality for agent configuration
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the corresponding tab content
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Sidebar navigation
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked link
+                    link.classList.add('active');
+                    
+                    // Hide all pages
+                    document.querySelectorAll('.page-container').forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    
+                    // Show the corresponding page
+                    const pageId = link.getAttribute('data-page') + '-page';
+                    const pageElement = document.getElementById(pageId);
+                    
+                    if (pageElement) {
+                        pageElement.classList.add('active');
+                    }
+                });
+            });
+            
+            // Simple drag functionality for flow nodes
+            const flowNodes = document.querySelectorAll('.flow-node');
+            
+            flowNodes.forEach(node => {
+                let isDragging = false;
+                let offsetX, offsetY;
+                
+                node.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    offsetX = e.clientX - node.getBoundingClientRect().left;
+                    offsetY = e.clientY - node.getBoundingClientRect().top;
+                    
+                    // Prevent text selection during drag
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const canvas = document.querySelector('.flow-canvas');
+                    const canvasRect = canvas.getBoundingClientRect();
+                    
+                    // Calculate new position
+                    let newX = e.clientX - canvasRect.left - offsetX;
+                    let newY = e.clientY - canvasRect.top - offsetY;
+                    
+                    // Keep within canvas bounds
+                    newX = Math.max(0, Math.min(newX, canvasRect.width - node.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, canvasRect.height - node.offsetHeight));
+                    
+                    node.style.left = newX + 'px';
+                    node.style.top = newY + 'px';
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

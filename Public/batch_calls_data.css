@@ -1,0 +1,83 @@
+/* voicebot-dashboard/public/batch_calls_data.css */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.batch-call-list {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.batch-call-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.batch-call-item:last-child {
+    border-bottom: none;
+}
+
+.batch-call-details {
+    flex: 1;
+}
+
+.batch-call-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.batch-call-meta {
+    display: flex;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.batch-call-meta-item {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.batch-call-meta-item i {
+    margin-right: 4px;
+    font-size: 14px;
+}
+
+.batch-call-actions {
+    display: flex;
+}
+
+.phone-action-btn {
+    padding: 8px 12px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.phone-action-btn:hover {
+    background-color: #f9fafb;
+}

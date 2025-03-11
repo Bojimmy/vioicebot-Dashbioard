@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoiceBot Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="agents_data.css">
+    <link rel="stylesheet" href="knowledge_base_data.css">
+    <link rel="stylesheet" href="phone_numbers_data.css">
+    <link rel="stylesheet" href="batch_calls_data.css">
+    <link rel="stylesheet" href="call_history_data.css">
+    <link rel="stylesheet" href="billing_data.css">
+    <link rel="stylesheet" href="api_keys_data.css">
+    <link rel="stylesheet" href="webhooks_data.css">
+    <link rel="stylesheet" href="analytics_data.css">
+    <link rel="stylesheet" href="settings_data.css">
+    <script src="agents_data.js" defer></script>
+    <script src="knowledge_base_data.js" defer></script>
+    <script src="phone_numbers_data.js" defer></script>
+    <script src="batch_calls_data.js" defer></script>
+    <script src="call_history_data.js" defer></script>
+    <script src="billing_data.js" defer></script>
+    <script src="api_keys_data.js" defer></script>
+    <script src="webhooks_data.js" defer></script>
+    <script src="analytics_data.js" defer></script>
+    <script src="settings_data.js" defer></script>
+    <style>
+      :root {
+        --primary-color: #4a6cf7;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --error-color: #ef4444;
+        --card-bg: #fff;
+        --border-color: #e5e7eb;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        line-height: 1.6;
+        background-color: #f9fafb;
+        color: var(--text-primary);
+        overflow-x: hidden;
+      }
+
+      .container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: var(--card-bg);
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .sidebar-header h1 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .sidebar-menu {
+        padding: 20px 0;
+      }
+
+      .sidebar-menu-item {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .sidebar-menu-item:hover,
+      .sidebar-menu-item.active {
+        background-color: #f3f4f6;
+        color: var(--primary-color);
+      }
+
+      .sidebar-menu-item i {
+        margin-right: 12px;
+        font-size: 16px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        flex: 1;
+        padding: 20px;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .page-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .action-btn {
+        padding: 10px 16px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .action-btn:hover {
+        background-color: #3b5bdb;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background-color: var(--card-bg);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-card h3 {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .stat-change {
+        font-size: 12px;
+        margin-left: 8px;
+      }
+
+      .stat-change.positive {
+        color: var(--success-color);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .tab {
+        padding: 10px 16px;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+        border-bottom: 2px solid transparent;
+      }
+
+      .tab.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        font-weight: 500;
+      }
+
+      .tab:hover {
+        color: var(--text-primary);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .form-card {
+        background-color: var(--card-bg);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 60px;
+        }
+
+        .sidebar-header h1 {
+          display: none;
+        }
+
+        .sidebar-menu-item {
+          justify-content: center;
+          padding: 12px;
+        }
+
+        .sidebar-menu-item span {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h1>VoiceBot</h1>
+        </div>
+        <div class="sidebar-menu">
+          <a href="#" class="sidebar-menu-item active" data-page="dashboard">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="agents">
+            <i class="fas fa-users"></i> Agents
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="knowledge-base">
+            <i class="fas fa-book"></i> Knowledge Base
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="phone-numbers">
+            <i class="fas fa-phone"></i> Phone Numbers
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="batch-calls">
+            <i class="fas fa-bolt"></i> Batch Calls
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="call-history">
+            <i class="fas fa-history"></i> Call History
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="billing">
+            <i class="fas fa-dollar-sign"></i> Billing
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="api-keys">
+            <i class="fas fa-key"></i> API Keys
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="webhooks">
+            <i class="fas fa-link"></i> Webhooks
+          </a>
+          <a href="#" class="sidebar-menu-item" data-page="settings">
+            <i class="fas fa-cog"></i> Settings
+          </a>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="page-header">
+          <h2>Dashboard</h2>
+        </div>
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <h3>Total Calls</h3>
+            <div class="stat-value">1,287 <span class="stat-change positive">+129</span></div>
+          </div>
+          <div class="stat-card">
+            <h3>Avg. Call Duration</h3>
+            <div class="stat-value">3m 42s <span class="stat-change positive">+59</span></div>
+          </div>
+          <div class="stat-card">
+            <h3>Appointments Set</h3>
+            <div class="stat-value">324 <span class="stat-change positive">+189</span></div>
+          </div>
+          <div class="stat-card">
+            <h3>Task Completion Rate</h3>
+            <div class="stat-value">92.4% <span class="stat-change positive">+3.2%</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" data-tab="general">General Settings</div>
+          <div class="tab" data-tab="voice">Voice & Language</div>
+          <div class="tab" data-tab="integrations">API Integrations</div>
+          <div class="tab" data-tab="flow">Conversation Flow</div>
+          <div class="tab" data-tab="phone">Phone Numbers</div>
+          <div class="tab" data-tab="knowledge">Knowledge Base</div>
+          <div class="tab" data-tab="analytics">Analytics</div>
+        </div>
+        <div class="tab-content active" id="general">
+          <div class="form-card">
+            <h3>Agents</h3>
+            <div style="display: flex; gap: 20px;">
+              <!-- Agent List (Left Side) -->
+              <div style="flex: 1; margin-top: 20px; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                  <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                      <th style="padding: 10px; font-weight: 500;">Name</th>
+                      <th style="padding: 10px; font-weight: 500;">Language</th>
+                      <th style="padding: 10px; font-weight: 500;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="agent-table-body">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                      <td style="padding: 10px;">Dana</td>
+                      <td style="padding: 10px;">English</td>
+                      <td style="padding: 10px;">
+                        <button class="phone-action-btn" data-action="open" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i> Open</button>
+                        <button class="phone-action-btn" data-action="edit" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i> Edit</button>
+                        <button class="phone-action-btn" data-action="duplicate" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i> Duplicate</button>
+                        <button class="phone-action-btn" data-action="delete" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="phone-action-btn" data-action="favorite" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-star"></i> Favorite</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Agent Details (Right Side) -->
+              <div id="agent-details" style="flex: 1; background-color: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: none;">
+                <h3>Agent Details</h3>
+                <div class="form-group">
+                  <label for="agent-name">Name</label>
+                  <input type="text" id="agent-name" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="agent-instructions">Instructions</label>
+                  <textarea id="agent-instructions" class="form-control" readonly placeholder="e.g., You are ZenCorp’s HR Bot. You help the user with HR-related queries. You always refer to ZenCorp’s HR policy when answering questions. #At the beginning of every call: Run (check_time())"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Knowledge</label>
+                  <textarea id="agent-knowledge" class="form-control" readonly placeholder="e.g., HR policies, training manuals (paste text here)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="agent-voice">Voice Model (11Labs)</label>
+                  <select id="agent-voice" class="form-control" disabled>
+                    <option value="cimo">English - Cimo (Male)</option>
+                    <option value="rachel">English - Rachel (Female)</option>
+                    <option value="juan">Spanish - Juan (Male)</option>
+                    <option value="sofia">Spanish - Sofia (Female)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="agent-language">Language</label>
+                  <select id="agent-language" class="form-control" disabled>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Avatar</label>
+                  <img id="agent-avatar" src="" alt="Agent Avatar" style="max-width: 100px; max-height: 100px; display: none;">
+                  <input type="file" id="agent-avatar-upload" style="display: none;" accept="image/jpeg,image/png">
+                  <button class="action-btn" id="edit-avatar" style="padding: 8px 12px; margin-top: 8px;">Edit Avatar</button>
+                </div>
+                <div style="margin-top: 20px;">
+                  <button class="action-btn" id="edit-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Edit Agent</button>
+                  <button class="phone-action-btn" id="save-agent-details" style="display: none; padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save</button>
+                  <button class="phone-action-btn" id="cancel-edit-agent" style="display: none; padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                  <button class="phone-action-btn" id="duplicate-agent" style="display: none; padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i> Duplicate</button>
+                  <button class="phone-action-btn" id="delete-agent" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Delete</button>
+                  <button class="phone-action-btn" id="toggle-favorite" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-star"></i> Add Favorite</button>
+                </div>
+                <!-- Placeholder Dropdowns and Sliders for Future Functionality -->
+                <div style="margin-top: 20px;">
+                  <label for="agent-setting">Settings Dropdown</label>
+                  <select id="agent-setting" class="form-control" disabled>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                  </select>
+                  <label for="volume-slider" style="margin-top: 10px;">Volume</label>
+                  <input type="range" id="volume-slider" min="0" max="100" value="50" class="form-control" disabled style="width: 100%;">
+                  <label for="speed-slider" style="margin-top: 10px;">Speech Speed</label>
+                  <input type="range" id="speed-slider" min="0" max="100" value="50" class="form-control" disabled style="width: 100%;">
+                </div>
+              </div>
+            </div>
+            <button class="action-btn" id="create-new-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Create New Agent</button>
+          </div>
+          <div id="agent-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Create New Agent</h2>
+              <div class="form-group">
+                <label for="new-agent-name">Name</label>
+                <input type="text" id="new-agent-name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="new-agent-instructions">Instructions</label>
+                <textarea id="new-agent-instructions" class="form-control" placeholder="e.g., You are ZenCorp’s HR Bot. You help the user with HR-related queries. You always refer to ZenCorp’s HR policy when answering questions. #At the beginning of every call: Run (check_time())"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Knowledge</label>
+                <textarea id="new-agent-knowledge" class="form-control" placeholder="e.g., HR policies, training manuals (paste text here)"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="new-agent-voice">Voice Model (11Labs)</label>
+                <select id="new-agent-voice" class="form-control">
+                  <option value="cimo">English - Cimo (Male)</option>
+                  <option value="rachel">English - Rachel (Female)</option>
+                  <option value="juan">Spanish - Juan (Male)</option>
+                  <option value="sofia">Spanish - Sofia (Female)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="new-agent-language">Language</label>
+                <select id="new-agent-language" class="form-control">
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Avatar</label>
+                <img id="new-agent-avatar-preview" src="" alt="Agent Avatar Preview" style="max-width: 100px; max-height: 100px; display: none;">
+                <input type="file" id="new-agent-avatar" class="form-control" accept="image/jpeg,image/png" style="margin-top: 8px;">
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Agent</button>
+                <button class="phone-action-btn" id="close-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="agents">
+          <!-- Same as #general for consistency -->
+          <div class="form-card">
+            <h3>Agents</h3>
+            <div style="display: flex; gap: 20px;">
+              <div style="flex: 1; margin-top: 20px; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                  <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                      <th style="padding: 10px; font-weight: 500;">Name</th>
+                      <th style="padding: 10px; font-weight: 500;">Language</th>
+                      <th style="padding: 10px; font-weight: 500;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="agent-table-body">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                      <td style="padding: 10px;">Dana</td>
+                      <td style="padding: 10px;">English</td>
+                      <td style="padding: 10px;">
+                        <button class="phone-action-btn" data-action="open" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i> Open</button>
+                        <button class="phone-action-btn" data-action="edit" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i> Edit</button>
+                        <button class="phone-action-btn" data-action="duplicate" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i> Duplicate</button>
+                        <button class="phone-action-btn" data-action="delete" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="phone-action-btn" data-action="favorite" data-agent="dana" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-star"></i> Favorite</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="agent-details" style="flex: 1; background-color: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: none;">
+                <h3>Agent Details</h3>
+                <div class="form-group">
+                  <label for="agent-name">Name</label>
+                  <input type="text" id="agent-name" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="agent-instructions">Instructions</label>
+                  <textarea id="agent-instructions" class="form-control" readonly placeholder="e.g., You are ZenCorp’s HR Bot. You help the user with HR-related queries. You always refer to ZenCorp’s HR policy when answering questions. #At the beginning of every call: Run (check_time())"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Knowledge</label>
+                  <textarea id="agent-knowledge" class="form-control" readonly placeholder="e.g., HR policies, training manuals (paste text here)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="agent-voice">Voice Model (11Labs)</label>
+                  <select id="agent-voice" class="form-control" disabled>
+                    <option value="cimo">English - Cimo (Male)</option>
+                    <option value="rachel">English - Rachel (Female)</option>
+                    <option value="juan">Spanish - Juan (Male)</option>
+                    <option value="sofia">Spanish - Sofia (Female)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="agent-language">Language</label>
+                  <select id="agent-language" class="form-control" disabled>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Avatar</label>
+                  <img id="agent-avatar" src="" alt="Agent Avatar" style="max-width: 100px; max-height: 100px; display: none;">
+                  <input type="file" id="agent-avatar-upload" style="display: none;" accept="image/jpeg,image/png">
+                  <button class="action-btn" id="edit-avatar" style="padding: 8px 12px; margin-top: 8px;">Edit Avatar</button>
+                </div>
+                <div style="margin-top: 20px;">
+                  <button class="action-btn" id="edit-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Edit Agent</button>
+                  <button class="phone-action-btn" id="save-agent-details" style="display: none; padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save</button>
+                  <button class="phone-action-btn" id="cancel-edit-agent" style="display: none; padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                  <button class="phone-action-btn" id="duplicate-agent" style="display: none; padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i> Duplicate</button>
+                  <button class="phone-action-btn" id="delete-agent" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Delete</button>
+                  <button class="phone-action-btn" id="toggle-favorite" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-star"></i> Add Favorite</button>
+                </div>
+                <!-- Placeholder Dropdowns and Sliders for Future Functionality -->
+                <div style="margin-top: 20px;">
+                  <label for="agent-setting">Settings Dropdown</label>
+                  <select id="agent-setting" class="form-control" disabled>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                  </select>
+                  <label for="volume-slider" style="margin-top: 10px;">Volume</label>
+                  <input type="range" id="volume-slider" min="0" max="100" value="50" class="form-control" disabled style="width: 100%;">
+                  <label for="speed-slider" style="margin-top: 10px;">Speech Speed</label>
+                  <input type="range" id="speed-slider" min="0" max="100" value="50" class="form-control" disabled style="width: 100%;">
+                </div>
+              </div>
+            </div>
+            <button class="action-btn" id="create-new-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Create New Agent</button>
+          </div>
+        </div>
+
+          <!-- Modal for Creating/Editing Agents -->
+          <div id="agent-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Create New Agent</h2>
+              <div class="form-group">
+                <label for="new-agent-name">Name</label>
+                <input type="text" id="new-agent-name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="new-agent-instructions">Instructions</label>
+                <textarea id="new-agent-instructions" class="form-control" placeholder="e.g., You are ZenCorp’s HR Bot. You help the user with HR-related queries. You always refer to ZenCorp’s HR policy when answering questions. Use Grok 3 for chat responses."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Knowledge</label>
+                <div id="knowledge-list"></div>
+                <button class="phone-action-btn" id="add-knowledge" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-plus"></i> Add Knowledge</button>
+              </div>
+              <div class="form-group">
+                <label for="new-agent-voice">Voice & Language (11Labs)</label>
+                <select id="new-agent-voice" class="form-control">
+                  <option value="cimo">English - Cimo</option>
+                  <option value="rachel">English - Rachel</option>
+                  <option value="other">Other (Specify)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="new-agent-llm">Chat LLM</label>
+                <select id="new-agent-llm" class="form-control">
+                  <option value="grok3">Grok 3</option>
+                  <option value="gpt4">GPT-4</option>
+                </select>
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-agent" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Agent</button>
+                <button class="phone-action-btn" id="close-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice & Language Tab (Sub-tab) -->
+          <div class="tab-content" id="voice">
+            <div class="form-card">
+              <h3>Voice & Language</h3>
+              <div style="margin-top: 20px;">
+                <div class="form-group">
+                  <label for="agent-voice">Voice Model (11Labs)</label>
+                  <select id="agent-voice" class="form-control">
+                    <option value="cimo">English - Cimo</option>
+                    <option value="rachel">English - Rachel</option>
+                    <option value="other">Other (Specify)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="agent-language">Language</label>
+                  <select id="agent-language" class="form-control">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="other">Other (Specify)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- API Integrations Tab (Sub-tab) -->
+          <div class="tab-content" id="integrations">
+            <div class="form-card">
+              <h3>API Integrations</h3>
+              <div style="margin-top: 20px;">
+                <div class="api-card">
+                  <div class="api-icon">
+                    <i class="fas fa-key"></i>
+                  </div>
+                  <div class="api-info">
+                    <div class="api-title">Production Key</div>
+                    <div class="api-status">................7Gk9</div>
+                  </div>
+                  <div class="api-action">
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+                <button class="action-btn" id="add-api-key" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add API Key</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conversation Flow Tab (Sub-tab) -->
+          <div class="tab-content" id="flow">
+            <div class="form-card">
+              <h3>Conversation Flow</h3>
+              <div class="flow-builder" style="height: 500px; position: relative;">
+                <div class="flow-canvas" style="width: 100%; height: 100%; background-color: #f9fafb; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; border-radius: 6px; overflow: auto;">
+                  <div class="flow-node flow-node-greeting" style="position: absolute; width: 180px; padding: 12px; background-color: white; border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: move; top: 150px; left: 200px; border-left: 3px solid #10b981;">
+                    <div class="flow-node-title">Greeting</div>
+                    <div class="flow-node-description">Welcome message</div>
+                  </div>
+                  <div class="flow-node flow-node-menu" style="position: absolute; width: 180px; padding: 12px; background-color: white; border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: move; top: 250px; left: 450px; border-left: 3px solid #f59e0b;">
+                    <div class="flow-node-title">Menu</div>
+                    <div class="flow-node-description">Options menu</div>
+                  </div>
+                  <div class="flow-node flow-node-appointment" style="position: absolute; width: 180px; padding: 12px; background-color: white; border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: move; top: 350px; left: 700px; border-left: 3px solid #4a6cf7;">
+                    <div class="flow-node-title">Appointment</div>
+                    <div class="flow-node-description">Scheduling</div>
+                  </div>
+                </div>
+                <div class="flow-tools" style="position: absolute; top: 40px; left: 40px; background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); padding: 12px;">
+                  <div class="flow-tool" style="display: flex; align-items: center; padding: 8px 12px; margin-bottom: 8px; background-color: #fff; border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s;">
+                    <i class="fas fa-plus" style="margin-right: 8px; color: var(--primary-color);"></i> Add Node
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone Numbers Tab (Sub-tab, Linked to #phone) -->
+          <div class="tab-content" id="phone">
+            <div class="form-card">
+              <h3>Phone Numbers</h3>
+              <div style="margin-top: 20px;">
+                <div class="phone-card">
+                  <div class="phone-icon" style="width: 48px; height: 48px; border-radius: 8px; background-color: rgba(74, 108, 247, 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px;">
+                    <i class="fas fa-phone"></i>
+                  </div>
+                  <div class="phone-details">
+                    <div class="phone-number">+1 (555) 123-4567</div>
+                    <div class="phone-info" style="display: flex; margin-top: 8px;">
+                      <span class="phone-info-item" style="display: flex; align-items: center; margin-right: 16px; font-size: 13px; color: var(--text-secondary);"><i class="fas fa-clock" style="margin-right: 4px; font-size: 14px;"></i> Active</span>
+                      <span class="phone-info-item" style="display: flex; align-items: center; margin-right: 16px; font-size: 13px; color: var(--text-secondary);"><i class="fas fa-users" style="margin-right: 4px; font-size: 14px;"></i> 50 Calls</span>
+                    </div>
+                  </div>
+                  <div class="phone-actions" style="display: flex;">
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-play"></i></button>
+                  </div>
+                </div>
+                <button class="action-btn" id="add-phone-number" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Phone Number</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Knowledge Base Tab (Sub-tab, Linked to #knowledge) -->
+          <div class="tab-content" id="knowledge">
+            <div class="form-card">
+              <h3>Knowledge Base</h3>
+              <div style="margin-top: 20px;">
+                <div class="kb-list">
+                  <div class="kb-item">
+                    <div class="kb-details">
+                      <div class="kb-title">Dental Procedures Guide</div>
+                      <div class="kb-meta">
+                        <span class="kb-meta-item"><i class="fas fa-file"></i> PDF</span>
+                        <span class="kb-meta-item"><i class="fas fa-clock"></i> Updated Feb 28, 2025</span>
+                      </div>
+                    </div>
+                    <div class="kb-actions">
+                      <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                      <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </div>
+                  <!-- Add more knowledge items here as needed -->
+                </div>
+                <button class="action-btn" id="add-knowledge-item" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Knowledge Item</button>
+              </div>
+            </div>
+
+            <!-- Modal for Adding/Editing Knowledge -->
+            <div id="knowledge-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+              <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+                <h2>Add Knowledge Item</h2>
+                <div class="form-group">
+                  <label for="knowledge-title">Title</label>
+                  <input type="text" id="knowledge-title" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="knowledge-source">Source</label>
+                  <input type="text" id="knowledge-source" class="form-control" placeholder="e.g., PDF, URL, File">
+                </div>
+                <div class="form-group">
+                  <label for="knowledge-date">Last Updated</label>
+                  <input type="date" id="knowledge-date" class="form-control">
+                </div>
+                <div style="margin-top: 20px;">
+                  <button class="action-btn" id="save-knowledge" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Item</button>
+                  <button class="phone-action-btn" id="close-knowledge-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Tab (Sub-tab) -->
+          <div class="tab-content" id="analytics">
+            <div class="form-card">
+              <h3>Analytics</h3>
+              <div class="dashboard-grid">
+                <div class="stat-card">
+                  <h3>Total Calls</h3>
+                  <div class="stat-value">1,287 <span class="stat-change positive">+129</span></div>
+                </div>
+                <div class="stat-card">
+                  <h3>Avg. Call Duration</h3>
+                  <div class="stat-value">3m 42s <span class="stat-change positive">+59</span></div>
+                </div>
+                <div class="stat-card">
+                  <h3>Appointments Set</h3>
+                  <div class="stat-value">324 <span class="stat-change positive">+189</span></div>
+                </div>
+                <div class="stat-card">
+                  <h3>Task Completion Rate</h3>
+                  <div class="stat-value">92.4% <span class="stat-change positive">+3.2%</span></div>
+                </div>
+              </div>
+              <div style="margin-top: 20px;">
+                <div class="form-group">
+                  <label for="analytics-date-range">Date Range</label>
+                  <input type="date" id="analytics-date-range" class="form-control">
+                </div>
+                <button class="action-btn" id="export-analytics" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-download"></i> Export Report</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Knowledge Base Page (Sidebar Link) -->
+        <div class="tab-content" id="knowledge-base">
+          <div class="form-card">
+            <h3>Knowledge Base</h3>
+            <div style="margin-top: 20px;">
+              <div class="kb-list">
+                <div class="kb-item">
+                  <div class="kb-details">
+                    <div class="kb-title">Dental Procedures Guide</div>
+                    <div class="kb-meta">
+                      <span class="kb-meta-item"><i class="fas fa-file"></i> PDF</span>
+                      <span class="kb-meta-item"><i class="fas fa-clock"></i> Updated Feb 28, 2025</span>
+                    </div>
+                  </div>
+                  <div class="kb-actions">
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+                <!-- Add more knowledge items here as needed -->
+              </div>
+              <button class="action-btn" id="add-knowledge-item" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Knowledge Item</button>
+            </div>
+          </div>
+
+          <!-- Modal for Adding/Editing Knowledge -->
+          <div id="knowledge-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add Knowledge Item</h2>
+              <div class="form-group">
+                <label for="knowledge-title">Title</label>
+                <input type="text" id="knowledge-title" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="knowledge-source">Source</label>
+                <input type="text" id="knowledge-source" class="form-control" placeholder="e.g., PDF, URL, File">
+              </div>
+              <div class="form-group">
+                <label for="knowledge-date">Last Updated</label>
+                <input type="date" id="knowledge-date" class="form-control">
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-knowledge" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Item</button>
+                <button class="phone-action-btn" id="close-knowledge-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Numbers Page (Sidebar Link) -->
+        <div class="tab-content" id="phone-numbers">
+          <div class="form-card">
+            <h3>Phone Numbers</h3>
+            <div style="margin-top: 20px;">
+              <div class="phone-card">
+                <div class="phone-icon" style="width: 48px; height: 48px; border-radius: 8px; background-color: rgba(74, 108, 247, 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 16px;">
+                  <i class="fas fa-phone"></i>
+                </div>
+                <div class="phone-details">
+                  <div class="phone-number">+1 (555) 123-4567</div>
+                  <div class="phone-info" style="display: flex; margin-top: 8px;">
+                    <span class="phone-info-item" style="display: flex; align-items: center; margin-right: 16px; font-size: 13px; color: var(--text-secondary);"><i class="fas fa-clock" style="margin-right: 4px; font-size: 14px;"></i> Active</span>
+                    <span class="phone-info-item" style="display: flex; align-items: center; margin-right: 16px; font-size: 13px; color: var(--text-secondary);"><i class="fas fa-users" style="margin-right: 4px; font-size: 14px;"></i> 50 Calls</span>
+                  </div>
+                </div>
+                <div class="phone-actions" style="display: flex;">
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-play"></i></button>
+                </div>
+              </div>
+              <button class="action-btn" id="add-phone-number" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Phone Number</button>
+            </div>
+          </div>
+
+          <!-- Modal for Adding/Editing Phone Number -->
+          <div id="phone-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add Phone Number</h2>
+              <div class="form-group">
+                <label for="phone-number">Phone Number</label>
+                <input type="text" id="phone-number" class="form-control" placeholder="e.g., +1 (555) 123-4567">
+              </div>
+              <div class="form-group">
+                <label for="phone-details">Details</label>
+                <input type="text" id="phone-details" class="form-control" placeholder="e.g., Business Line, Personal">
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-phone" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Number</button>
+                <button class="phone-action-btn" id="close-phone-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Batch Calls Page (Sidebar Link) -->
+        <div class="tab-content" id="batch-calls">
+          <div class="form-card">
+            <h3>Batch Calls</h3>
+            <div style="margin-top: 20px;">
+              <div class="batch-call-list">
+                <div class="batch-call-item">
+                  <div class="batch-call-details">
+                    <div class="batch-call-title">Appointment Reminders</div>
+                    <div class="batch-call-meta">
+                      <span class="batch-call-meta-item"><i class="fas fa-user"></i> Dana</span>
+                      <span class="batch-call-meta-item"><i class="fas fa-clock"></i> Scheduled: Feb 28, 2025 10:00 AM</span>
+                      <span class="batch-call-meta-item"><i class="fas fa-circle" style="color: #f59e0b;"></i> Pending</span>
+                    </div>
+                  </div>
+                  <div class="batch-call-actions">
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-play"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-stop"></i></button>
+                    <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+                <!-- Add more batch calls here as needed -->
+              </div>
+              <button class="action-btn" id="add-batch-call" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Create Batch Call</button>
+            </div>
+          </div>
+
+          <!-- Modal for Creating/Editing Batch Call -->
+          <div id="batch-call-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Create Batch Call</h2>
+              <div class="form-group">
+                <label for="batch-call-name">Name</label>
+                <input type="text" id="batch-call-name" class="form-control" placeholder="e.g., Appointment Reminders">
+              </div>
+              <div class="form-group">
+                <label for="batch-call-agent">Agent</label>
+                <select id="batch-call-agent" class="form-control">
+                  <option value="dana">Dana</option>
+                  <option value="custom">Custom Agent</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="batch-call-numbers">Phone Numbers</label>
+                <textarea id="batch-call-numbers" class="form-control" placeholder="e.g., +1 (555) 123-4567, +1 (555) 789-0123"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="batch-call-script">Script</label>
+                <textarea id="batch-call-script" class="form-control" placeholder="e.g., Hello, this is Dana from Smile Dental. We’re reminding you of your appointment on..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="batch-call-schedule">Schedule</label>
+                <input type="datetime-local" id="batch-call-schedule" class="form-control">
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-batch-call" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Batch</button>
+                <button class="phone-action-btn" id="close-batch-call-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Call History Page (Sidebar Link) -->
+        <div class="tab-content" id="call-history">
+          <div class="form-card">
+            <h3>Call History</h3>
+            <div style="margin-top: 20px; overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                    <th style="padding: 10px; font-weight: 500;">Date</th>
+                    <th style="padding: 10px; font-weight: 500;">Phone Number</th>
+                    <th style="padding: 10px; font-weight: 500;">Agent</th>
+                    <th style="padding: 10px; font-weight: 500;">Duration</th>
+                    <th style="padding: 10px; font-weight: 500;">Status</th>
+                    <th style="padding: 10px; font-weight: 500;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 10px;">Feb 28, 2025 9:12 AM</td>
+                    <td style="padding: 10px;">+1 (555) 123-4567</td>
+                    <td style="padding: 10px;">Dana</td>
+                    <td style="padding: 10px;">5m</td>
+                    <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Completed</span></td>
+                    <td style="padding: 10px;">
+                      <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                      <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-file-alt"></i></button>
+                    </td>
+                  </tr>
+                  <!-- Add more calls here as needed -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Billing Page (Sidebar Link) -->
+        <div class="tab-content" id="billing">
+          <div class="form-card">
+            <h3>Billing & Usage</h3>
+            <div class="dashboard-grid">
+              <div class="stat-card">
+                <h3>Current Month Usage</h3>
+                <div class="stat-value">$142.87</div>
+              </div>
+              <div class="stat-card">
+                <h3>Call Minutes</h3>
+                <div class="stat-value">1,287 mins</div>
+              </div>
+              <div class="stat-card">
+                <h3>API Requests</h3>
+                <div class="stat-value">5,432</div>
+              </div>
+              <div class="stat-card">
+                <h3>Plan</h3>
+                <div class="stat-value">Business</div>
+              </div>
+            </div>
+            <div style="margin-top: 20px;">
+              <h3>Recent Invoices</h3>
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                  <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                      <th style="padding: 10px; font-weight: 500;">Date</th>
+                      <th style="padding: 10px; font-weight: 500;">Invoice #</th>
+                      <th style="padding: 10px; font-weight: 500;">Amount</th>
+                      <th style="padding: 10px; font-weight: 500;">Status</th>
+                      <th style="padding: 10px; font-weight: 500;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                      <td style="padding: 10px;">Feb 01, 2025</td>
+                      <td style="padding: 10px;">INV-2025-0287</td>
+                      <td style="padding: 10px;">$138.54</td>
+                      <td style="padding: 10px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); padding: 3px 8px; border-radius: 4px; font-size: 12px;">Paid</span></td>
+                      <td style="padding: 10px;">
+                        <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-download"></i></button>
+                      </td>
+                    </tr>
+                    <!-- Add more invoices here as needed -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <button class="action-btn" id="add-payment-method" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Payment Method</button>
+          </div>
+
+          <!-- Modal for Adding/Editing Payment Method -->
+          <div id="billing-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add Payment Method</h2>
+              <div class="form-group">
+                <label for="payment-card">Card Number</label>
+                <input type="text" id="payment-card" class="form-control" placeholder="e.g., 1234 5678 9012 3456">
+              </div>
+              <div class="form-group">
+                <label for="payment-expiry">Expiry Date</label>
+                <input type="month" id="payment-expiry" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="payment-cvv">CVV</label>
+                <input type="text" id="payment-cvv" class="form-control" placeholder="e.g., 123">
+              </div>
+              <div class="form-group">
+                <label for="payment-address">Billing Address</label>
+                <textarea id="payment-address" class="form-control" placeholder="e.g., 123 Main St, City, State, ZIP"></textarea>
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-payment" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Payment</button>
+                <button class="phone-action-btn" id="close-billing-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API Keys Page (Sidebar Link) -->
+        <div class="tab-content" id="api-keys">
+          <div class="form-card">
+            <h3>API Keys</h3>
+            <div style="margin-top: 20px;">
+              <div class="api-card">
+                <div class="api-icon">
+                  <i class="fas fa-key"></i>
+                </div>
+                <div class="api-info">
+                  <div class="api-title">Production Key</div>
+                  <div class="api-status">................7Gk9</div>
+                </div>
+                <div class="api-action">
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+              <div class="api-card">
+                <div class="api-icon">
+                  <i class="fas fa-key"></i>
+                </div>
+                <div class="api-info">
+                  <div class="api-title">Development Key</div>
+                  <div class="api-status">...............XJk3</div>
+                </div>
+                <div class="api-action">
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-eye"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-copy"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+              <button class="action-btn" id="add-api-key" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add API Key</button>
+            </div>
+          </div>
+
+          <!-- Modal for Adding/Editing API Key -->
+          <div id="api-key-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add API Key</h2>
+              <div class="form-group">
+                <label for="api-key-name">Name</label>
+                <input type="text" id="api-key-name" class="form-control" placeholder="e.g., Production Key">
+              </div>
+              <div class="form-group">
+                <label for="api-key-permissions">Permissions</label>
+                <textarea id="api-key-permissions" class="form-control" placeholder="e.g., Read, Write, Delete"></textarea>
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-api-key" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Key</button>
+                <button class="phone-action-btn" id="close-api-key-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Webhooks Page (Sidebar Link) -->
+        <div class="tab-content" id="webhooks">
+          <div class="form-card">
+            <h3>Webhooks</h3>
+            <div style="margin-top: 20px;">
+              <div class="api-card">
+                <div class="api-icon">
+                  <i class="fas fa-link"></i>
+                </div>
+                <div class="api-info">
+                  <div class="api-title">Call Completion Webhook</div>
+                  <div class="api-status">https://api.example.com/webhook/calls</div>
+                </div>
+                <div class="api-action">
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-play"></i></button>
+                </div>
+              </div>
+              <div class="api-card">
+                <div class="api-icon">
+                  <i class="fas fa-link"></i>
+                </div>
+                <div class="api-info">
+                  <div class="api-title">Appointment Webhook</div>
+                  <div class="api-status">https://api.example.com/webhook/appointments</div>
+                </div>
+                <div class="api-action">
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pencil-alt"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-trash"></i></button>
+                  <button class="phone-action-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;"><i class="fas fa-play"></i></button>
+                </div>
+              </div>
+              <button class="action-btn" id="add-webhook" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add Webhook</button>
+            </div>
+          </div>
+
+          <!-- Modal for Adding/Editing Webhook -->
+          <div id="webhook-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add Webhook</h2>
+              <div class="form-group">
+                <label for="webhook-name">Name</label>
+                <input type="text" id="webhook-name" class="form-control" placeholder="e.g., Call Completion">
+              </div>
+              <div class="form-group">
+                <label for="webhook-url">URL</label>
+                <input type="text" id="webhook-url" class="form-control" placeholder="e.g., https://api.example.com/webhook">
+              </div>
+              <div class="form-group">
+                <label for="webhook-events">Events</label>
+                <textarea id="webhook-events" class="form-control" placeholder="e.g., call_completed, appointment_set"></textarea>
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-webhook" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Webhook</button>
+                <button class="phone-action-btn" id="close-webhook-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Page (Sidebar Link) -->
+        <div class="tab-content" id="settings">
+          <div class="form-card">
+            <h3>Account Settings</h3>
+            <div style="margin-top: 20px;">
+              <div class="form-group">
+                <label for="account-name">Account Name</label>
+                <input type="text" id="account-name" class="form-control" value="Smile Dental">
+              </div>
+              <div class="form-group">
+                <label for="account-email">Email Address</label>
+                <input type="email" id="account-email" class="form-control" value="admin@smiledental.com">
+              </div>
+              <div class="form-group">
+                <label for="account-timezone">Timezone</label>
+                <select id="account-timezone" class="form-control">
+                  <option value="America/New_York" selected>Eastern Time (US & Canada)</option>
+                  <option value="America/Chicago">Central Time (US & Canada)</option>
+                  <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
+                </select>
+              </div>
+              <button class="action-btn" id="save-account-settings" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save Changes</button>
+            </div>
+          </div>
+          <div class="form-card">
+            <h3>Security</h3>
+            <div style="margin-top: 20px;">
+              <div class="form-group">
+                <label for="current-password">Current Password</label>
+                <input type="password" id="current-password" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" class="form-control">
+              </div>
+              <button class="action-btn" id="update-password" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Update Password</button>
+            </div>
+          </div>
+          <button class="action-btn" id="add-user" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;"><i class="fas fa-plus"></i> Add User</button>
+          <div id="user-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="modal-content" style="background: white; margin: 15% auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px;">
+              <h2>Add User</h2>
+              <div class="form-group">
+                <label for="user-name">Name</label>
+                <input type="text" id="user-name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="user-email">Email</label>
+                <input type="email" id="user-email" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="user-role">Role</label>
+                <select id="user-role" class="form-control">
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </select>
+              </div>
+              <div style="margin-top: 20px;">
+                <button class="action-btn" id="save-user" style="padding: 10px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;">Save User</button>
+                <button class="phone-action-btn" id="close-user-modal" style="padding: 8px 12px; background-color: transparent; border: 1px solid var(--border-color); border-radius: 4px; margin-left: 8px; cursor: pointer; transition: all 0.2s;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Sidebar navigation
+      document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelectorAll('.sidebar-menu-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const page = item.getAttribute('data-page');
+          document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+          document.getElementById(page).classList.add('active');
+          document.querySelector('.page-header h2').textContent = item.textContent.trim();
+        });
+      });
+    
+      // Tab switching
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const tabId = tab.getAttribute('data-tab');
+          document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    </script>

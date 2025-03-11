@@ -1,0 +1,34 @@
+/* voicebot-dashboard/public/settings_data.css */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.phone-action-btn {
+    padding: 8px 12px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.phone-action-btn:hover {
+    background-color: #f9fafb;
+}
